@@ -1,0 +1,39 @@
+{
+  "name": "relay",
+  "version": "4.1.7",
+  "description": "Relayer for Arcane Privacy solution. https://arcaneprivacy.com",
+  "scripts": {
+    "server": "node src/server.js",
+    "worker": "node src/worker",
+    "healthWatcher": "node src/healthWatcher",
+    "eslint": "eslint --ext .js --ignore-path .gitignore .",
+    "prettier:check": "npx prettier --check . --config .prettierrc",
+    "prettier:fix": "npx prettier --write . --config .prettierrc",
+    "lint": "yarn eslint && yarn prettier:check",
+    "test": "mocha",
+    "build": "docker build -t arcaneprivacy/relayer:solana .",
+    "start": "docker-compose up -d redis && concurrently \"yarn server\" \"yarn worker\" \"yarn healthWatcher\""
+  },
+  "author": "arcane.privacy",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "ajv": "^6.12.5",
+    "bs58": "^6.0.0",
+    "bull": "^3.12.1",
+    "concurrently": "^8.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.14.1",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "mocha": "^8.1.3",
+    "nodemon": "^3.1.10",
+    "prettier": "^2.1.2"
+  }
+}

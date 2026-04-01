@@ -1,0 +1,98 @@
+version: '2'
+
+services:
+  redis:
+    image: redis
+    restart: always
+    command: [redis-server, --appendonly, 'yes']
+    volumes:
+      - redis:/data
+    ports:
+      - '127.0.0.1:6379:6379'
+    networks:
+      - proxy-network
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+    networks:
+      - proxy-network
+    logging:
+      driver: none
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: acme-companion
+    restart: always
+    environment:
+      NGINX_PROXY_CONTAINER: nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - acme:/etc/acme.sh
+    depends_on: [nginx-proxy]
+    networks:
+      - proxy-network
+
+  # ---------------------- SOLANA ----------------------- #
+
+  solana-server:
+    build: .
+    image: arcaneprivacy/relayer:solana
+    restart: always
+    command: server
+    env_file:
+      - .env
+      - .env.proxy
+    environment:
+      REDIS_URL: redis://redis/0
+      nginx_proxy_read_timeout: 600
+    depends_on: [redis]
+    networks:
+      - proxy-network
+
+  solana-healthWatcher:
+    image: arcaneprivacy/relayer:solana
+    restart: always
+    command: healthWatcher
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis/0
+    depends_on: [redis, solana-server]
+    networks:
+      - proxy-network
+
+  solana-worker1:
+    image: arcaneprivacy/relayer:solana
+    restart: always
+    command: worker
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis/0
+    depends_on: [redis, solana-server]
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    driver: bridge
+
+volumes:
+  acme:
+  conf:
+  vhost:
+  html:
+  certs:
+  redis:

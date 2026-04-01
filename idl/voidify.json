@@ -1,0 +1,578 @@
+{
+  "address": "VoidbU31WRPfK93P4GDge9ZR28QgppaJQX1sMLcuaLe",
+  "metadata": {
+    "name": "voidify",
+    "version": "0.2.0",
+    "spec": "0.1.0",
+    "description": "Voidify Contract"
+  },
+  "instructions": [
+    {
+      "name": "add_pool",
+      "discriminator": [115, 230, 212, 211, 175, 49, 39, 169],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "network_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 111, 105, 100, 105, 102, 121, 45, 99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "denomination",
+          "type": "u64"
+        },
+        {
+          "name": "levels",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "deposit",
+      "discriminator": [242, 35, 198, 137, 82, 225, 242, 182],
+      "accounts": [
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [116, 114, 101, 97, 115, 117, 114, 121]
+              }
+            ]
+          }
+        },
+        {
+          "name": "commitment_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 109, 109, 105, 116, 109, 101, 110, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment",
+          "type": {
+            "array": ["u8", 32]
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_network",
+      "discriminator": [104, 231, 73, 121, 240, 0, 5, 148],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "network_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 111, 105, 100, 105, 102, 121, 45, 99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "config_authority",
+          "type": "pubkey"
+        },
+        {
+          "name": "wallets",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Wallet"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "migrate_network",
+      "discriminator": [92, 102, 222, 93, 133, 180, 17, 71],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "network_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 111, 105, 100, 105, 102, 121, 45, 99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_network",
+      "discriminator": [39, 115, 188, 77, 162, 232, 216, 161],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "network_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 111, 105, 100, 105, 102, 121, 45, 99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "config_authority",
+          "type": "pubkey"
+        },
+        {
+          "name": "wallets",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Wallet"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "discriminator": [183, 18, 70, 156, 148, 109, 161, 34],
+      "accounts": [
+        {
+          "name": "relayer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [116, 114, 101, 97, 115, 117, 114, 121]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "writable": true
+        },
+        {
+          "name": "nullifier_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 117, 108, 108, 105, 102, 105, 101, 114]
+              },
+              {
+                "kind": "arg",
+                "path": "nullifier_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "network_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 111, 105, 100, 105, 102, 121, 45, 99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "proof",
+          "type": {
+            "array": ["u8", 256]
+          }
+        },
+        {
+          "name": "root",
+          "type": {
+            "array": ["u8", 32]
+          }
+        },
+        {
+          "name": "nullifier_hash",
+          "type": {
+            "array": ["u8", 32]
+          }
+        },
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "refund",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Commitment",
+      "discriminator": [61, 112, 129, 128, 24, 147, 77, 87]
+    },
+    {
+      "name": "NetworkState",
+      "discriminator": [212, 237, 148, 56, 97, 245, 51, 169]
+    },
+    {
+      "name": "Nullifier",
+      "discriminator": [18, 56, 142, 165, 181, 158, 187, 133]
+    },
+    {
+      "name": "Pool",
+      "discriminator": [241, 154, 109, 4, 17, 177, 109, 188]
+    }
+  ],
+  "events": [
+    {
+      "name": "DepositEvent",
+      "discriminator": [120, 248, 61, 83, 31, 142, 107, 144]
+    },
+    {
+      "name": "WithdrawalEvent",
+      "discriminator": [161, 53, 185, 18, 98, 254, 54, 165]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidProof",
+      "msg": "Invalid zero-knowledge proof"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidRoot",
+      "msg": "Invalid root"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidFeeAmount",
+      "msg": "Invalid fee amount"
+    },
+    {
+      "code": 6003,
+      "name": "InsufficientAmount",
+      "msg": "Amount less than fee"
+    },
+    {
+      "code": 6004,
+      "name": "AlreadyUsed",
+      "msg": "Nullifier has already been used"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidLevels",
+      "msg": "Invalid levels"
+    },
+    {
+      "code": 6006,
+      "name": "MerkleTreeFull",
+      "msg": "Merkle tree is full"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAccounts",
+      "msg": "Invalid accounts"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidWallets",
+      "msg": "Invalid wallets"
+    },
+    {
+      "code": 6009,
+      "name": "TooManyWallets",
+      "msg": "Too many wallets"
+    }
+  ],
+  "types": [
+    {
+      "name": "Commitment",
+      "type": {
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "Configuration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_wallet",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "wallets",
+            "type": {
+              "option": {
+                "vec": {
+                  "defined": {
+                    "name": "Wallet"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "index",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NetworkState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": {
+              "defined": {
+                "name": "Configuration"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Nullifier",
+      "type": {
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "merkle_tree",
+            "type": {
+              "defined": {
+                "name": "PoseidonMerkleTree"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoseidonMerkleTree",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "levels",
+            "type": "u32"
+          },
+          {
+            "name": "filled_subtrees",
+            "type": {
+              "vec": {
+                "array": ["u8", 32]
+              }
+            }
+          },
+          {
+            "name": "roots",
+            "type": {
+              "vec": {
+                "array": ["u8", 32]
+              }
+            }
+          },
+          {
+            "name": "current_root_index",
+            "type": "u32"
+          },
+          {
+            "name": "next_index",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wallet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_split",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawalEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "nullifier_hash",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "relayer",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
