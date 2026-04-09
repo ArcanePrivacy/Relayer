@@ -24,13 +24,39 @@
           "name": "user",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "notes",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  111,
+                  116,
+                  101,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
           "name": "encrypted_notes",
           "type": {
-            "vec": "bytes"
+            "vec": "string"
           }
         }
       ]
@@ -121,6 +147,53 @@
           }
         }
       ]
+    },
+    {
+      "name": "init_notes",
+      "discriminator": [
+        214,
+        94,
+        178,
+        116,
+        131,
+        89,
+        247,
+        17
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "notes",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  111,
+                  116,
+                  101,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "withdraw",
@@ -292,6 +365,19 @@
       ]
     },
     {
+      "name": "Notes",
+      "discriminator": [
+        105,
+        126,
+        200,
+        34,
+        252,
+        93,
+        84,
+        168
+      ]
+    },
+    {
       "name": "Nullifier",
       "discriminator": [
         18,
@@ -330,19 +416,6 @@
         142,
         107,
         144
-      ]
-    },
-    {
-      "name": "EncryptedNote",
-      "discriminator": [
-        112,
-        191,
-        136,
-        40,
-        75,
-        247,
-        86,
-        136
       ]
     },
     {
@@ -472,22 +545,6 @@
       }
     },
     {
-      "name": "EncryptedNote",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "type": "pubkey"
-          },
-          {
-            "name": "encrypted_note",
-            "type": "bytes"
-          }
-        ]
-      }
-    },
-    {
       "name": "NetworkState",
       "type": {
         "kind": "struct",
@@ -498,6 +555,20 @@
               "defined": {
                 "name": "Configuration"
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Notes",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "entries",
+            "type": {
+              "vec": "string"
             }
           }
         ]
