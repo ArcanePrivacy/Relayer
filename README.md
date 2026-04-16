@@ -47,7 +47,7 @@ _\* Warning: Failure to configure SSH as the first UFW rule, will lock you out o
 
 2. Clone the example environment file `.env.example` to configure for the preferred network - `cp .env.example .env` , then fill `.env` file.
 
-- Set `PRIVATE_KEY` for your relayer address (remove the 0x from your private key)
+- Set `PRIVATE_KEY` for your relayer address. Accepted formats: base58, JSON byte array (`[159,24,...]`), comma-separated bytes (`159,24,...`), or `0x`-prefixed hex (64-byte key).
 - Set `RELAYER_FEE` to what you would like to charge as your fee (remember 0.3% is deducted from your staked relayer balance)
 - Set `RPC_URL` to a non-censoring RPC endpoint
 
