@@ -174,7 +174,7 @@ async function submitTx(job) {
           await program.provider.connection.getLatestBlockhash('confirmed')
         ).lastValidBlockHeight,
       },
-      'confirmed', // Commitment level
+      'finalized', // Commitment level
     )
 
     void updateStatus(status.MINED)

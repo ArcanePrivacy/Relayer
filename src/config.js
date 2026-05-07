@@ -53,7 +53,6 @@ function parsePrivateKey(input) {
 }
 
 module.exports = {
-  netId: process.env.NET_ID || 'devnet',
   redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
   rpcUrl: process.env.RPC_URL,
   merkleTreeHeight: 20,

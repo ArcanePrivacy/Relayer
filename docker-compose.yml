@@ -2,15 +2,15 @@ version: '2'
 
 services:
   redis:
-    image: redis
+    image: redis:alpine
     restart: always
-    command: [redis-server, --appendonly, 'yes']
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis:/data
-    ports:
-      - '127.0.0.1:6379:6379'
+#    ports:
+#      - '127.0.0.1:6379:6379'
     networks:
-      - proxy-network
+      - redis-network
 
   nginx-proxy:
     image: jwilder/nginx-proxy
@@ -57,11 +57,12 @@ services:
       - .env
       - .env.proxy
     environment:
-      REDIS_URL: redis://redis/0
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis/0
       nginx_proxy_read_timeout: 600
     depends_on: [redis]
     networks:
       - proxy-network
+      - redis-network
 
   solana-healthWatcher:
     image: arcaneprivacy/relayer:solana
@@ -69,10 +70,10 @@ services:
     command: healthWatcher
     env_file: .env
     environment:
-      REDIS_URL: redis://redis/0
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis/0
     depends_on: [redis, solana-server]
     networks:
-      - proxy-network
+      - redis-network
 
   solana-worker1:
     image: arcaneprivacy/relayer:solana
@@ -80,14 +81,17 @@ services:
     command: worker
     env_file: .env
     environment:
-      REDIS_URL: redis://redis/0
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis/0
     depends_on: [redis, solana-server]
     networks:
-      - proxy-network
+      - redis-network
 
 networks:
   proxy-network:
     driver: bridge
+  redis-network:
+    driver: bridge
+    internal: true
 
 volumes:
   acme:

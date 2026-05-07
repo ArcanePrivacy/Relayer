@@ -1,10 +1,12 @@
 const express = require('express')
+const helmet = require('helmet')
 const { port } = require('./config')
 const { version } = require('../package.json')
 const router = require('./router')
 
 const app = express()
-app.use(express.json())
+app.use(express.json({ limit: '5kb' }))
+app.use(helmet())
 app.use(router)
 app.listen(port)
 console.log(`Relayer ${version} started on port ${port}`)
