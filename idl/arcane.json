@@ -9,16 +9,7 @@
   "instructions": [
     {
       "name": "backup_notes",
-      "discriminator": [
-        49,
-        223,
-        25,
-        28,
-        239,
-        170,
-        71,
-        27
-      ],
+      "discriminator": [49, 223, 25, 28, 239, 170, 71, 27],
       "accounts": [
         {
           "name": "user",
@@ -32,13 +23,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  110,
-                  111,
-                  116,
-                  101,
-                  115
-                ]
+                "value": [110, 111, 116, 101, 115]
               },
               {
                 "kind": "account",
@@ -63,16 +48,7 @@
     },
     {
       "name": "deposit",
-      "discriminator": [
-        242,
-        35,
-        198,
-        137,
-        82,
-        225,
-        242,
-        182
-      ],
+      "discriminator": [242, 35, 198, 137, 82, 225, 242, 182],
       "accounts": [
         {
           "name": "sender",
@@ -90,16 +66,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  116,
-                  114,
-                  101,
-                  97,
-                  115,
-                  117,
-                  114,
-                  121
-                ]
+                "value": [116, 114, 101, 97, 115, 117, 114, 121]
               }
             ]
           }
@@ -111,18 +78,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  109,
-                  109,
-                  105,
-                  116,
-                  109,
-                  101,
-                  110,
-                  116
-                ]
+                "value": [99, 111, 109, 109, 105, 116, 109, 101, 110, 116]
               },
               {
                 "kind": "arg",
@@ -130,6 +86,18 @@
               }
             ]
           }
+        },
+        {
+          "name": "queue",
+          "address": "EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "instructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
@@ -140,26 +108,14 @@
         {
           "name": "commitment",
           "type": {
-            "array": [
-              "u8",
-              32
-            ]
+            "array": ["u8", 32]
           }
         }
       ]
     },
     {
       "name": "init_notes",
-      "discriminator": [
-        214,
-        94,
-        178,
-        116,
-        131,
-        89,
-        247,
-        17
-      ],
+      "discriminator": [214, 94, 178, 116, 131, 89, 247, 17],
       "accounts": [
         {
           "name": "user",
@@ -173,13 +129,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  110,
-                  111,
-                  116,
-                  101,
-                  115
-                ]
+                "value": [110, 111, 116, 101, 115]
               },
               {
                 "kind": "account",
@@ -197,16 +147,7 @@
     },
     {
       "name": "withdraw",
-      "discriminator": [
-        183,
-        18,
-        70,
-        156,
-        148,
-        109,
-        161,
-        34
-      ],
+      "discriminator": [183, 18, 70, 156, 148, 109, 161, 34],
       "accounts": [
         {
           "name": "relayer",
@@ -224,16 +165,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  116,
-                  114,
-                  101,
-                  97,
-                  115,
-                  117,
-                  114,
-                  121
-                ]
+                "value": [116, 114, 101, 97, 115, 117, 114, 121]
               }
             ]
           }
@@ -249,17 +181,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  110,
-                  117,
-                  108,
-                  108,
-                  105,
-                  102,
-                  105,
-                  101,
-                  114
-                ]
+                "value": [110, 117, 108, 108, 105, 102, 105, 101, 114]
               },
               {
                 "kind": "arg",
@@ -274,24 +196,22 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  97,
-                  114,
-                  99,
-                  97,
-                  110,
-                  101,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [97, 114, 99, 97, 110, 101, 45, 99, 111, 110, 102, 105, 103]
               }
             ]
           }
+        },
+        {
+          "name": "queue",
+          "address": "EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "instructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
@@ -302,28 +222,19 @@
         {
           "name": "proof",
           "type": {
-            "array": [
-              "u8",
-              256
-            ]
+            "array": ["u8", 256]
           }
         },
         {
           "name": "root",
           "type": {
-            "array": [
-              "u8",
-              32
-            ]
+            "array": ["u8", 32]
           }
         },
         {
           "name": "nullifier_hash",
           "type": {
-            "array": [
-              "u8",
-              32
-            ]
+            "array": ["u8", 32]
           }
         },
         {
@@ -340,113 +251,50 @@
   "accounts": [
     {
       "name": "Commitment",
-      "discriminator": [
-        61,
-        112,
-        129,
-        128,
-        24,
-        147,
-        77,
-        87
-      ]
+      "discriminator": [61, 112, 129, 128, 24, 147, 77, 87]
     },
     {
       "name": "NetworkState",
-      "discriminator": [
-        212,
-        237,
-        148,
-        56,
-        97,
-        245,
-        51,
-        169
-      ]
+      "discriminator": [212, 237, 148, 56, 97, 245, 51, 169]
     },
     {
       "name": "Notes",
-      "discriminator": [
-        105,
-        126,
-        200,
-        34,
-        252,
-        93,
-        84,
-        168
-      ]
+      "discriminator": [105, 126, 200, 34, 252, 93, 84, 168]
     },
     {
       "name": "Nullifier",
-      "discriminator": [
-        18,
-        56,
-        142,
-        165,
-        181,
-        158,
-        187,
-        133
-      ]
+      "discriminator": [18, 56, 142, 165, 181, 158, 187, 133]
     },
     {
       "name": "Pool",
-      "discriminator": [
-        241,
-        154,
-        109,
-        4,
-        17,
-        177,
-        109,
-        188
-      ]
+      "discriminator": [241, 154, 109, 4, 17, 177, 109, 188]
     }
   ],
   "events": [
     {
       "name": "DepositEvent",
-      "discriminator": [
-        120,
-        248,
-        61,
-        83,
-        31,
-        142,
-        107,
-        144
-      ]
+      "discriminator": [120, 248, 61, 83, 31, 142, 107, 144]
     },
     {
       "name": "WithdrawalEvent",
-      "discriminator": [
-        161,
-        53,
-        185,
-        18,
-        98,
-        254,
-        54,
-        165
-      ]
+      "discriminator": [161, 53, 185, 18, 98, 254, 54, 165]
     }
   ],
   "errors": [
     {
       "code": 6000,
-      "name": "InvalidProof",
-      "msg": "Invalid zero-knowledge proof"
+      "name": "AlreadyUsed",
+      "msg": "Nullifier has already been used"
     },
     {
       "code": 6001,
-      "name": "InvalidRoot",
-      "msg": "Invalid root"
+      "name": "FeedMismatch",
+      "msg": "Feed hash mismatch - oracle feed does not match expected configuration"
     },
     {
       "code": 6002,
-      "name": "InvalidFeeAmount",
-      "msg": "Invalid fee amount"
+      "name": "HashFailed",
+      "msg": "Poseidon hash operation failed"
     },
     {
       "code": 6003,
@@ -455,31 +303,71 @@
     },
     {
       "code": 6004,
-      "name": "AlreadyUsed",
-      "msg": "Nullifier has already been used"
-    },
-    {
-      "code": 6005,
-      "name": "InvalidLevels",
-      "msg": "Invalid levels"
-    },
-    {
-      "code": 6006,
-      "name": "MerkleTreeFull",
-      "msg": "Merkle tree is full"
-    },
-    {
-      "code": 6007,
       "name": "InvalidAccounts",
       "msg": "Invalid accounts"
     },
     {
+      "code": 6005,
+      "name": "InvalidAuthority",
+      "msg": "Configuration authority cannot be the default public key"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidDenomination",
+      "msg": "Pool denomination must be greater than zero"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidFeeAmount",
+      "msg": "Invalid fee amount"
+    },
+    {
       "code": 6008,
+      "name": "InvalidLevels",
+      "msg": "Invalid levels"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidProof",
+      "msg": "Invalid zero-knowledge proof"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidRoot",
+      "msg": "Invalid root"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidRefund",
+      "msg": "Refund must be zero for SOL-only mixer"
+    },
+    {
+      "code": 6012,
       "name": "InvalidWallets",
       "msg": "Invalid wallets"
     },
     {
-      "code": 6009,
+      "code": 6013,
+      "name": "MerkleTreeFull",
+      "msg": "Merkle tree is full"
+    },
+    {
+      "code": 6014,
+      "name": "NoOracleFeeds",
+      "msg": "No oracle feeds available"
+    },
+    {
+      "code": 6015,
+      "name": "RiskTooHigh",
+      "msg": "Risk score exceeds allowed threshold"
+    },
+    {
+      "code": 6016,
+      "name": "StaleQuote",
+      "msg": "Stale quote - the quote is too old"
+    },
+    {
+      "code": 6017,
       "name": "TooManyWallets",
       "msg": "Too many wallets"
     }
@@ -527,10 +415,7 @@
           {
             "name": "commitment",
             "type": {
-              "array": [
-                "u8",
-                32
-              ]
+              "array": ["u8", 32]
             }
           },
           {
@@ -613,10 +498,7 @@
             "name": "filled_subtrees",
             "type": {
               "vec": {
-                "array": [
-                  "u8",
-                  32
-                ]
+                "array": ["u8", 32]
               }
             }
           },
@@ -624,10 +506,7 @@
             "name": "roots",
             "type": {
               "vec": {
-                "array": [
-                  "u8",
-                  32
-                ]
+                "array": ["u8", 32]
               }
             }
           },
@@ -674,10 +553,7 @@
           {
             "name": "nullifier_hash",
             "type": {
-              "array": [
-                "u8",
-                32
-              ]
+              "array": ["u8", 32]
             }
           },
           {

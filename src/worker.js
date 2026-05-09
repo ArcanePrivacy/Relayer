@@ -4,6 +4,7 @@ const { queue } = require('./queue')
 const { RelayerError, logRelayerError } = require('./utils')
 const { jobType, status } = require('./constants')
 const { keypair, relayerFee, PRIORITY_FEE_PER_CU_MICRO_LAMPORTS } = require('./config')
+const { getOracleQuote } = require('./modules/rangeSDK')
 const { redis } = require('./modules/redis')
 const idl = require('../idl/arcane.json')
 
@@ -89,6 +90,8 @@ async function submitTx(job) {
     .divn(1000000)
   const relayerFeeAmount = new BN(job.data.denomination).mul(new BN(relayerFee * 100)).divn(1000000)
 
+  const { queueAccount, sigVerifyIx } = await getOracleQuote(keypair, recipient.toBase58())
+
   const withdrawIx = await program.methods
     .withdraw(
       Array.from(Buffer.from(job.data.proof.substring(2), 'hex')),
@@ -104,6 +107,9 @@ async function submitTx(job) {
       networkState: networkStatePDA,
       treasury: treasuryPDA,
       nullifier: nullifierPDA,
+      queue: queueAccount,
+      slotHashes: web3.SYSVAR_SLOT_HASHES_PUBKEY,
+      instructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
       systemProgram: web3.SystemProgram.programId,
     })
     .remainingAccounts(
@@ -117,7 +123,7 @@ async function submitTx(job) {
     )
     .instruction()
 
-  const tx = new web3.Transaction().add(setComputePriceIx).add(withdrawIx)
+  const tx = new web3.Transaction().add(sigVerifyIx).add(setComputePriceIx).add(withdrawIx)
 
   tx.feePayer = relayer
   tx.recentBlockhash = (await provider.connection.getLatestBlockhash('confirmed')).blockhash

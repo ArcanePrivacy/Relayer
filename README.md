@@ -49,8 +49,10 @@ _\* Warning: Failure to configure SSH as the first UFW rule, will lock you out o
 
 - Set `PRIVATE_KEY` for your relayer address. Accepted formats: base58, JSON byte array (`[159,24,...]`), comma-separated bytes (`159,24,...`), or `0x`-prefixed hex (64-byte key).
 - Set `RELAYER_FEE` to what you would like to charge as your fee (remember 0.3% is deducted from your staked relayer balance)
+- Set `RANGE_API_KEY` (you can get key from [here](https://docs.range.org/introduction/getting-started))
 - Set `RPC_URL` to a non-censoring RPC endpoint
 - Set `REDIS_PASSWORD`
+- Set `NET_ID=devnet` if you're running relayer on devnet
 
 3. Clone the reverse-proxy environment file `.env.proxy.example` to configure your domain/TLS - `cp .env.proxy.example .env.proxy`, then fill `.env.proxy`.
 
@@ -59,6 +61,7 @@ _\* Warning: Failure to configure SSH as the first UFW rule, will lock you out o
 
 4. Uncomment the `env_file` lines (remove `# `) for the associated network services in `docker-compose.yml`
 5. Build and deploy the docker source by specifying the network through:
+
 - `sudo apt install npm`
 - `npm run build`
 - `docker-compose up -d`

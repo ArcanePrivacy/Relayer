@@ -1,5 +1,5 @@
 const queue = require('../queue')
-const { relayerFee, keypair, PRIORITY_FEE_PER_CU_MICRO_LAMPORTS } = require('../config')
+const { netId, relayerFee, keypair, PRIORITY_FEE_PER_CU_MICRO_LAMPORTS } = require('../config')
 const { version } = require('../../package.json')
 const { redis } = require('../modules/redis')
 const { readRelayerErrors } = require('../utils')
@@ -8,7 +8,6 @@ async function status(req, res) {
   const health = await redis.hgetall('health')
   health.errorsLog = await readRelayerErrors(redis)
   const { waiting: currentQueue } = await queue.queue.getJobCounts()
-  const netId = await require('../modules/network')()
 
   res.json({
     netId,
