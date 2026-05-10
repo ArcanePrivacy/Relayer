@@ -74,6 +74,7 @@ services:
     depends_on: [redis, solana-server]
     networks:
       - redis-network
+      - proxy-network
 
   solana-worker1:
     image: arcaneprivacy/relayer:solana
@@ -85,6 +86,7 @@ services:
     depends_on: [redis, solana-server]
     networks:
       - redis-network
+      - proxy-network
 
 networks:
   proxy-network:

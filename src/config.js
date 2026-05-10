@@ -69,6 +69,5 @@ module.exports = {
   keypair: web3.Keypair.fromSecretKey(parsePrivateKey(process.env.PRIVATE_KEY)),
   port: process.env.APP_PORT || 8000,
   relayerFee: Number(process.env.RELAYER_FEE),
-  PRIORITY_FEE_PER_CU_MICRO_LAMPORTS: Number(process.env.PRIORITY_FEE_PER_CU_MICRO_LAMPORTS),
   minimumBalance: web3.LAMPORTS_PER_SOL * 0.02,
 }

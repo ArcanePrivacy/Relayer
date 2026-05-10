@@ -50,7 +50,7 @@ _\* Warning: Failure to configure SSH as the first UFW rule, will lock you out o
 - Set `PRIVATE_KEY` for your relayer address. Accepted formats: base58, JSON byte array (`[159,24,...]`), comma-separated bytes (`159,24,...`), or `0x`-prefixed hex (64-byte key).
 - Set `RELAYER_FEE` to what you would like to charge as your fee (remember 0.3% is deducted from your staked relayer balance)
 - Set `RANGE_API_KEY` (you can get key from [here](https://docs.range.org/introduction/getting-started))
-- Set `RPC_URL` to a non-censoring RPC endpoint
+- Set `RPC_URL` — for example [Helius](https://www.helius.dev/) (`https://devnet.helius-rpc.com/?api-key=...` or `https://mainnet.helius-rpc.com/?api-key=...` matching `NET_ID`)
 - Set `REDIS_PASSWORD`
 - Set `NET_ID=devnet` if you're running relayer on devnet
 

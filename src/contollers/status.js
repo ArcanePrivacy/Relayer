@@ -1,5 +1,5 @@
 const queue = require('../queue')
-const { netId, relayerFee, keypair, PRIORITY_FEE_PER_CU_MICRO_LAMPORTS } = require('../config')
+const { netId, relayerFee, keypair } = require('../config')
 const { version } = require('../../package.json')
 const { redis } = require('../modules/redis')
 const { readRelayerErrors } = require('../utils')
@@ -13,7 +13,6 @@ async function status(req, res) {
     netId,
     rewardAccount: keypair.publicKey.toString(),
     relayerFee,
-    PRIORITY_FEE_PER_CU_MICRO_LAMPORTS,
     version,
     health,
     currentQueue,

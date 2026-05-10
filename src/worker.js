@@ -3,7 +3,7 @@ const { web3, AnchorProvider, Wallet, Program, BN } = require('@coral-xyz/anchor
 const { queue } = require('./queue')
 const { RelayerError, logRelayerError } = require('./utils')
 const { jobType, status } = require('./constants')
-const { keypair, relayerFee, PRIORITY_FEE_PER_CU_MICRO_LAMPORTS } = require('./config')
+const { keypair, relayerFee } = require('./config')
 const { getOracleQuote } = require('./modules/rangeSDK')
 const { redis } = require('./modules/redis')
 const idl = require('../idl/arcane.json')
@@ -63,10 +63,6 @@ async function processJob(job) {
 async function submitTx(job) {
   await checkRecipient(job)
 
-  const setComputePriceIx = web3.ComputeBudgetProgram.setComputeUnitPrice({
-    microLamports: PRIORITY_FEE_PER_CU_MICRO_LAMPORTS,
-  })
-
   const [networkStatePDA] = web3.PublicKey.findProgramAddressSync(
     [Buffer.from('arcane-config')],
     program.programId,
@@ -123,7 +119,7 @@ async function submitTx(job) {
     )
     .instruction()
 
-  const tx = new web3.Transaction().add(sigVerifyIx).add(setComputePriceIx).add(withdrawIx)
+  const tx = new web3.Transaction().add(sigVerifyIx).add(withdrawIx)
 
   tx.feePayer = relayer
   tx.recentBlockhash = (await provider.connection.getLatestBlockhash('confirmed')).blockhash
@@ -137,14 +133,11 @@ async function submitTx(job) {
     throw new Error('Estimation error: transaction will possibly be reverted')
   }
 
-  const unitsConsumed = simulationResult.value.unitsConsumed
-
   // Calculate fees
   const message = tx.compileMessage()
   const feeResponse = await provider.connection.getFeeForMessage(message, 'confirmed')
   const baseFee = feeResponse.value
-  const priorityFee = Math.ceil((unitsConsumed * PRIORITY_FEE_PER_CU_MICRO_LAMPORTS) / 1000000)
-  const totalEstimatedFee = baseFee + priorityFee
+  const totalEstimatedFee = baseFee
 
   if (
     platformFee
