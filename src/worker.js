@@ -3,16 +3,17 @@ const { web3, AnchorProvider, Wallet, Program, BN } = require('@coral-xyz/anchor
 const { queue } = require('./queue')
 const { RelayerError, logRelayerError } = require('./utils')
 const { jobType, status } = require('./constants')
-const { keypair, relayerFee } = require('./config')
+const { keypair, relayerFee, netId } = require('./config')
 const { getOracleQuote } = require('./modules/rangeSDK')
 const { redis } = require('./modules/redis')
-const idl = require('../idl/arcane.json')
+const IDL = require('../idl/arcane.json')
+const IDL_DEVNET = require('../idl/arcane-devnet.json')
 
 const connection = require('./modules/connection')()
 const provider = new AnchorProvider(connection, new Wallet(keypair), {
   commitment: 'confirmed',
 })
-const program = new Program(idl, provider)
+const program = new Program(netId === 'devnet' ? IDL_DEVNET : IDL, provider)
 
 let currentJob
 
