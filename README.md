@@ -43,7 +43,7 @@ _\* Warning: Failure to configure SSH as the first UFW rule, will lock you out o
 
 1. Clone the repository and enter the directory
 
-- `git clone https://github.com/SmoothWork1/arcane_relayer.git && cd arcane_relayer`
+- `git clone https://github.com/ArcanePrivacy/Relayer.git && cd Relayer`
 
 2. Clone the example environment file `.env.example` to configure for the preferred network - `cp .env.example .env` , then fill `.env` file.
 
