@@ -56,11 +56,6 @@ function parsePrivateKey(input) {
   return decoded
 }
 
-const rangeApiKey = process.env.RANGE_API_KEY
-if (!rangeApiKey || !String(rangeApiKey).trim()) {
-  throw new Error('RANGE_API_KEY is required.')
-}
-
 module.exports = {
   netId: process.env.NET_ID || 'mainnet-beta',
   rpcUrl: process.env.RPC_URL,
