@@ -43,6 +43,7 @@ const arcaneWithdrawSchema = {
       minItems: 6,
       items: [bytes32Type, bytes32Type, addressType, relayerType, bytes32Type, bytes32Type],
     },
+    mint: addressType,
   },
   additionalProperties: false,
   required: ['proof', 'denomination', 'args'],

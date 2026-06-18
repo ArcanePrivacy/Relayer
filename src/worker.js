@@ -1,4 +1,10 @@
 const { web3, AnchorProvider, Wallet, Program, BN } = require('@coral-xyz/anchor')
+const {
+  getAssociatedTokenAddressSync,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountInstruction,
+} = require('@solana/spl-token')
 
 const { queue } = require('./queue')
 const { RelayerError, logRelayerError } = require('./utils')
@@ -8,9 +14,10 @@ const { redis } = require('./modules/redis')
 const IDL = require('../idl/arcane.json')
 const IDL_DEVNET = require('../idl/arcane-devnet.json')
 
+const commitment = 'confirmed'
 const connection = require('./modules/connection')()
 const provider = new AnchorProvider(connection, new Wallet(keypair), {
-  commitment: 'confirmed',
+  commitment,
 })
 const program = new Program(netId === 'devnet' ? IDL_DEVNET : IDL, provider)
 
@@ -63,61 +70,102 @@ async function processJob(job) {
 async function submitTx(job) {
   await checkRecipient(job)
 
+  const denomination = new BN(job.data.denomination)
+  const recipient = new web3.PublicKey(job.data.args[2])
+  const relayer = new web3.PublicKey(job.data.args[3])
+
   const [networkStatePDA] = web3.PublicKey.findProgramAddressSync(
     [Buffer.from('arcane-config')],
     program.programId,
   )
-  const [treasuryPDA] = web3.PublicKey.findProgramAddressSync([Buffer.from('treasury')], program.programId)
-  const [poolPDA] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from('pool'), new BN(job.data.denomination).toArrayLike(Buffer, 'be', 8)],
-    program.programId,
-  )
-  const [nullifierPDA] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from('nullifier'), Buffer.from(job.data.args[1].substring(2), 'hex')],
-    program.programId,
-  )
-
-  const recipient = new web3.PublicKey(job.data.args[2])
-  const relayer = new web3.PublicKey(job.data.args[3])
-
   const networkState = await program.account.networkState.fetch(networkStatePDA)
-  const platformFee = new BN(job.data.denomination)
-    .mul(new BN(networkState.config.wallets.reduce((acc, wallet) => acc + wallet.feeSplit, 0)))
+  const wallets = networkState.config.wallets || []
+
+  const platformFee = denomination
+    .mul(new BN(wallets.reduce((acc, wallet) => acc + wallet.feeSplit, 0)))
     .divn(1000000)
-  const relayerFeeAmount = new BN(job.data.denomination).mul(new BN(relayerFee * 100)).divn(1000000)
+  const relayerFeeAmount = denomination.mul(new BN(relayerFee * 100)).divn(1000000)
 
-  const withdrawIx = await program.methods
-    .withdraw(
-      Array.from(Buffer.from(job.data.proof.substring(2), 'hex')),
-      Array.from(Buffer.from(job.data.args[0].substring(2), 'hex')),
-      Array.from(Buffer.from(job.data.args[1].substring(2), 'hex')),
-      new BN(job.data.args[4].substring(2), 'hex'),
-      new BN(job.data.args[5].substring(2), 'hex'),
-    )
-    .accounts({
-      recipient,
-      relayer,
-      pool: poolPDA,
-      networkState: networkStatePDA,
-      treasury: treasuryPDA,
-      nullifier: nullifierPDA,
-      systemProgram: web3.SystemProgram.programId,
-    })
-    .remainingAccounts(
-      networkState.config.wallets
-        .map(wallet => wallet.address)
-        .map(pubkey => ({
-          pubkey,
-          isSigner: false,
-          isWritable: true,
-        })),
-    )
-    .instruction()
+  const tx = new web3.Transaction()
+  if ('mint' in job.data) {
+    const mint = new web3.PublicKey(job.data.mint)
+    const mintAccountInfo = await provider.connection.getAccountInfo(mint)
+    const tokenProgram = mintAccountInfo.owner
 
-  const tx = new web3.Transaction().add(withdrawIx)
+    const [tokenPoolPDA] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('pool'), mint.toBuffer(), denomination.toArrayLike(Buffer, 'be', 8)],
+      program.programId,
+    )
+
+    const preInstructions = await createAssociatedTokenAccountInstructions(
+      keypair,
+      [recipient, relayer, ...wallets.map(wallet => wallet.address)],
+      mint,
+      tokenProgram,
+    )
+
+    const withdrawIx = await program.methods
+      .tokenWithdraw(
+        Array.from(Buffer.from(job.data.proof.substring(2), 'hex')),
+        Array.from(Buffer.from(job.data.args[0].substring(2), 'hex')),
+        Array.from(Buffer.from(job.data.args[1].substring(2), 'hex')),
+        new BN(job.data.args[4].substring(2), 'hex'),
+        new BN(job.data.args[5].substring(2), 'hex'),
+      )
+      .accountsPartial({
+        recipient,
+        relayer,
+        pool: tokenPoolPDA,
+        mint,
+        tokenProgram,
+      })
+      .remainingAccounts(
+        wallets
+          .map(wallet => getAssociatedTokenAddressSync(mint, wallet.address, false, tokenProgram))
+          .map(pubkey => ({
+            pubkey,
+            isSigner: false,
+            isWritable: true,
+          })),
+      )
+      .instruction()
+
+    tx.add(...preInstructions, withdrawIx)
+  } else {
+    const [poolPDA] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('pool'), denomination.toArrayLike(Buffer, 'be', 8)],
+      program.programId,
+    )
+
+    const withdrawIx = await program.methods
+      .withdraw(
+        Array.from(Buffer.from(job.data.proof.substring(2), 'hex')),
+        Array.from(Buffer.from(job.data.args[0].substring(2), 'hex')),
+        Array.from(Buffer.from(job.data.args[1].substring(2), 'hex')),
+        new BN(job.data.args[4].substring(2), 'hex'),
+        new BN(job.data.args[5].substring(2), 'hex'),
+      )
+      .accountsPartial({
+        recipient,
+        relayer,
+        pool: poolPDA,
+      })
+      .remainingAccounts(
+        wallets
+          .map(wallet => wallet.address)
+          .map(pubkey => ({
+            pubkey,
+            isSigner: false,
+            isWritable: true,
+          })),
+      )
+      .instruction()
+
+    tx.add(withdrawIx)
+  }
 
   tx.feePayer = relayer
-  tx.recentBlockhash = (await provider.connection.getLatestBlockhash('confirmed')).blockhash
+  tx.recentBlockhash = (await provider.connection.getLatestBlockhash(commitment)).blockhash
 
   const simulationResult = await provider.connection.simulateTransaction(tx, [keypair])
 
@@ -130,7 +178,7 @@ async function submitTx(job) {
 
   // Calculate fees
   const message = tx.compileMessage()
-  const feeResponse = await provider.connection.getFeeForMessage(message, 'confirmed')
+  const feeResponse = await provider.connection.getFeeForMessage(message, commitment)
   const baseFee = feeResponse.value
   const totalEstimatedFee = baseFee
 
@@ -150,7 +198,7 @@ async function submitTx(job) {
     tx.partialSign(keypair)
     const signature = await program.provider.connection.sendRawTransaction(tx.serialize(), {
       skipPreflight: false, // Run preflight checks to catch errors early
-      preflightCommitment: 'confirmed',
+      preflightCommitment: commitment,
     })
 
     // Update transaction hash (signature in Solana)
@@ -165,7 +213,7 @@ async function submitTx(job) {
         signature,
         blockhash: tx.recentBlockhash,
         lastValidBlockHeight: (
-          await program.provider.connection.getLatestBlockhash('confirmed')
+          await program.provider.connection.getLatestBlockhash(commitment)
         ).lastValidBlockHeight,
       },
       'finalized', // Commitment level
@@ -178,7 +226,7 @@ async function submitTx(job) {
     if (confirmation.value.err) {
       // Fetch transaction details for better error logging
       const txDetails = await program.provider.connection.getTransaction(signature, {
-        commitment: 'confirmed',
+        commitment,
         maxSupportedTransactionVersion: 0,
       })
       console.error('Transaction failed with logs:', txDetails.meta.logMessages || [])
@@ -187,7 +235,7 @@ async function submitTx(job) {
 
     // Update confirmations (Solana doesn't provide a direct "confirmations" count like EVM,
     // but we can simulate it by checking the slot or block height)
-    const latestBlockHeight = (await program.provider.connection.getLatestBlockhash('confirmed'))
+    const latestBlockHeight = (await program.provider.connection.getLatestBlockhash(commitment))
       .lastValidBlockHeight
     const txBlockHeight = confirmation.context.slot
     const confirmations = latestBlockHeight - txBlockHeight + 1
@@ -200,6 +248,49 @@ async function submitTx(job) {
     console.error('Transaction error:', e)
     throw new RelayerError(`Transaction reverted: ${e.message}`)
   }
+}
+
+async function createAssociatedTokenAccountInstructions(
+  payer,
+  owners,
+  mint,
+  programId = TOKEN_PROGRAM_ID,
+  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID,
+) {
+  const instructions = []
+  if (!owners.length) return instructions
+
+  const ownerPubkeys = owners.map(owner =>
+    owner instanceof web3.PublicKey ? owner : new web3.PublicKey(owner),
+  )
+
+  const ataAddresses = ownerPubkeys.map(owner =>
+    getAssociatedTokenAddressSync(mint, owner, false, programId, associatedTokenProgramId),
+  )
+
+  const accountsInfo = await connection.getMultipleAccountsInfo(ataAddresses, commitment)
+
+  // Check each account: if missing or wrong owner, add creation instruction
+  for (let i = 0; i < ownerPubkeys.length; i++) {
+    const accountInfo = accountsInfo[i]
+    const exists = accountInfo !== null
+    const isOwnedByTokenProgram = exists && accountInfo.owner.equals(programId)
+
+    if (!exists || !isOwnedByTokenProgram) {
+      instructions.push(
+        createAssociatedTokenAccountInstruction(
+          payer.publicKey,
+          ataAddresses[i],
+          ownerPubkeys[i],
+          mint,
+          programId,
+          associatedTokenProgramId,
+        ),
+      )
+    }
+  }
+
+  return instructions
 }
 
 async function updateTxHash(txHash) {
