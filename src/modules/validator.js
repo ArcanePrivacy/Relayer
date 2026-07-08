@@ -27,7 +27,7 @@ ajv.addKeyword('isFeeRecipient', {
   errors: true,
 })
 
-const addressType = { type: 'string', pattern: '^[1-9A-HJ-NP-Za-km-z]{32,44}$' }
+const addressType = { type: 'string', pattern: '^[1-9A-HJ-NP-Za-km-z]{32,44}$', isAddress: true }
 const proofType = { type: 'string', pattern: '^0x[a-fA-F0-9]{512}$' }
 const bytes32Type = { type: 'string', pattern: '^0x[a-fA-F0-9]{64}$' }
 const relayerType = { ...addressType, isFeeRecipient: true }
