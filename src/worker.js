@@ -178,21 +178,25 @@ async function submitTx(job) {
   }
 
   // Calculate fees
-  const message = tx.compileMessage()
-  const feeResponse = await provider.connection.getFeeForMessage(message, commitment)
-  const baseFee = feeResponse.value
-  const totalEstimatedFee = baseFee
+  // const message = tx.compileMessage()
+  // const feeResponse = await provider.connection.getFeeForMessage(message, commitment)
+  // const baseFee = feeResponse.value
+  // const totalEstimatedFeeLamports = totalRent.addn(baseFee)
 
-  if (
-    platformFee
-      .add(relayerFeeAmount)
-      .add(new BN(totalEstimatedFee))
-      .gt(new BN(job.data.args[4].substring(2), 'hex'))
-  ) {
-    throw new RelayerError(
-      'Provided fee is not enough. Probably it is a Gas Price spike, try to resubmit.',
-      0,
-    )
+  // TODO: Include ATA creation rent in the fee sufficiency check for token withdrawals.
+  // Currently, the relayer pays the rent for any missing ATAs (recipient, relayer, fee wallets).
+  // The required fee check only adds platformFee + relayerFeeAmount,
+  // but does not include the rent lamports (totalRent) and base signature fee that are spent by the relayer.
+  // This means the relayer can be forced to pay rent for new ATAs and base signature fee without reimbursement.
+  // For SOL withdrawals (non-token), no ATAs are created, so rent is not an issue.
+  // In the future, we should include totalRent in the fee requirement by converting it
+  // to a token-denominated amount using a reliable exchange rate (e.g., from an oracle).
+  // Currently, this is omitted because fetching a token/SOL exchange rate is not trivial
+  // (costly and rate-limited). Alternatively, we could consider covering the rent with
+  // the relayer fee itself, but that would reduce profitability.
+
+  if (platformFee.add(relayerFeeAmount).gt(new BN(job.data.args[4].substring(2), 'hex'))) {
+    throw new RelayerError('Provided fee is not enough, try to resubmit.')
   }
 
   try {

@@ -1,4 +1,4 @@
-const { PublicKey } = require('@coral-xyz/anchor')
+const { web3 } = require('@coral-xyz/anchor')
 const { keypair } = require('../config')
 
 const Ajv = require('ajv')
@@ -7,7 +7,7 @@ const ajv = new Ajv({ format: 'fast' })
 ajv.addKeyword('isAddress', {
   validate: (schema, data) => {
     try {
-      new PublicKey(data)
+      new web3.PublicKey(data)
       return true
     } catch (e) {
       return false
