@@ -82,11 +82,6 @@ async function submitTx(job) {
   const networkState = await program.account.networkState.fetch(networkStatePDA)
   const wallets = networkState.config.wallets || []
 
-  const [poolPDA] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from('pool'), denomination.toArrayLike(Buffer, 'be', 8)],
-    program.programId,
-  )
-
   const platformFee = denomination
     .mul(new BN(wallets.reduce((acc, wallet) => acc + wallet.feeSplit, 0)))
     .divn(1000000)
@@ -99,13 +94,18 @@ async function submitTx(job) {
     if (!mintAccountInfo) throw new RelayerError('Unknown mint')
 
     const tokenProgram = mintAccountInfo.owner
-    if (tokenProgram !== TOKEN_PROGRAM_ID && tokenProgram !== TOKEN_2022_PROGRAM_ID) {
-      throw new RelayerError('Unknown mint')
+    if (!tokenProgram.equals(TOKEN_PROGRAM_ID) && !tokenProgram.equals(TOKEN_2022_PROGRAM_ID)) {
+      throw new RelayerError('Unknown mint program')
     }
+
+    const [tokenPoolPDA] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('pool'), mint.toBuffer(), denomination.toArrayLike(Buffer, 'be', 8)],
+      program.programId,
+    )
 
     const preInstructions = await createAssociatedTokenAccountInstructions(
       keypair,
-      [recipient, relayer, ...wallets.map(wallet => wallet.address)],
+      [...wallets.map(wallet => wallet.address)],
       mint,
       tokenProgram,
     )
@@ -121,7 +121,7 @@ async function submitTx(job) {
       .accountsPartial({
         recipient,
         relayer,
-        pool: poolPDA,
+        pool: tokenPoolPDA,
         mint,
         tokenProgram,
       })
@@ -138,6 +138,11 @@ async function submitTx(job) {
 
     tx.add(...preInstructions, withdrawIx)
   } else {
+    const [poolPDA] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('pool'), denomination.toArrayLike(Buffer, 'be', 8)],
+      program.programId,
+    )
+
     const withdrawIx = await program.methods
       .withdraw(
         Array.from(Buffer.from(job.data.proof.substring(2), 'hex')),
